@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+option go_package = "proto/quera/pb";
+
+import "user.proto";
+import "google/protobuf/any.proto";
+
+message Order {
+    reserved 9;
+    uint64 id = 1;
+    uint32 quantity = 2;
+    uint32 total_bill = 3;
+    string ipg_method = 4;
+    string voucher_code = 5;
+    uint32 voucher_amount = 6;
+    repeated OrderItem items = 7;
+    /* 
+        it's possible to define inner scope messages/enums 
+    */
+
+    OrderStatus status = 8;
+    User user = 10;
+    repeated google.protobuf.Any details = 11;
+    oneof external_payment {
+        uint32 digi_pay = 12;
+        uint32 snapp_pay = 13;
+    }
+    map<string,string> headers = 14;
+}
+
+enum OrderStatus {
+    UNKNOWN = 0;
+    SETTLED = 1;
+    PAID = 2;
+    CANCELED = 3;
+}
+
+message OrderItem {
+    uint64 id = 1;
+    uint64 order_id = 2;
+    string item_name = 3;
+    uint32 quantity = 4;
+    uint32 unit_price = 5;
+    string item_description = 6;
+}
+
+
+message GetOrderFilter {
+    uint64 ID = 1;
+    string username = 2;
+}
+
+message GetOrderResponse {
+    repeated Order orders = 1;
+}
+
+message OrderByIDRequest {
+    uint64 ID = 1;
+}
+
+service OrderService {
+    rpc GetOrder(GetOrderFilter) returns (GetOrderResponse);
+    rpc GetOrderByID(OrderByIDRequest) returns (Order);
+}

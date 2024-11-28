@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package = "proto/quera/pb";
+
+
+message Chunk {
+    bytes data = 1;
+    string file_name = 2;
+    bool done = 3;
+}
+
+message DownloadRequest {
+    string file_name = 1;
+}
+
+enum UploadStatus {
+    UNKNOWN_STATUS = 0;
+    SUCCESS = 1;
+    FAILED = 2;
+}
+
+message UploadResponse {
+    UploadStatus status = 1;
+}
+
+message EchoMessage {
+    string msg = 1;
+}
+
+message EchoResponse {
+    string echoMsg = 1;
+}
+
+service FS {
+    rpc Upload(stream Chunk)  returns (UploadResponse);
+    rpc Download(DownloadRequest) returns (stream Chunk);
+    rpc Echo(EchoMessage) returns (EchoResponse);
+    rpc Echo2(EchoMessage) returns (EchoResponse);
+}
